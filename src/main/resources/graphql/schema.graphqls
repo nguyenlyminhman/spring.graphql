@@ -1,0 +1,30 @@
+# src/main/resources/graphql/schema.graphqls
+
+type Query {
+    me: User
+    allUsers: [User!]!
+    product(id: ID!): Product
+}
+
+type Mutation {
+    login(username: String!, password: String!): AuthPayload!
+    createProduct(name: String!, price: Float!): Product!
+}
+
+type AuthPayload {
+    token: String!
+    user: User!
+}
+
+type User {
+    id: ID!
+    username: String!
+    roles: [String!]!
+}
+
+type Product {
+    id: ID!
+    name: String!
+    price: Float!
+    owner: User!
+}
