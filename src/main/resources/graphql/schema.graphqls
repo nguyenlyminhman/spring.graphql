@@ -1,30 +1,69 @@
 # src/main/resources/graphql/schema.graphqls
 
-type Query {
-    me: User
-    allUsers: [User!]!
-    product(id: ID!): Product
-}
-
-type Mutation {
-    login(username: String!, password: String!): AuthPayload!
-    createProduct(name: String!, price: Float!): Product!
-}
-
-type AuthPayload {
-    token: String!
-    user: User!
-}
-
+# Types ===========================================
 type User {
     id: ID!
     username: String!
-    roles: [String!]!
+    email: String!
+    createdAt: String
 }
 
-type Product {
+type AuthPayload {
+    accessToken: String!
+    refreshToken: String!
+    tokenType: String!
+    expiresIn: Int!
+    user: User!
+}
+
+type Post {
     id: ID!
-    name: String!
-    price: Float!
-    owner: User!
+    title: String!
+    content: String!
+    author: User!
+    createdAt: String!
+}
+
+# Inputs ===========================================
+input LoginInput {
+    username: String!
+    password: String!
+}
+
+input RegisterInput {
+    username: String!
+    email: String!
+    password: String!
+}
+
+input CreatePostInput {
+    title: String!
+    content: String!
+}
+
+input RefreshTokenInput {
+    refreshToken: String!
+}
+
+# Queries ===========================================
+type Query {
+    # ✅ Public - không cần token
+    publicInfo: String!
+
+    # 🔒 Protected - cần JWT hợp lệ  (@RequireLogin)
+    me: User!
+    myPosts: [Post!]!
+    allPosts: [Post!]!
+}
+
+# Mutations ===========================================
+type Mutation {
+    # ✅ Public
+    login(input: LoginInput!): AuthPayload!
+    register(input: RegisterInput!): AuthPayload!
+    refreshToken(input: RefreshTokenInput!): AuthPayload!
+
+    # 🔒 Protected (@RequireLogin)
+    createPost(input: CreatePostInput!): Post!
+    logout: Boolean!
 }
